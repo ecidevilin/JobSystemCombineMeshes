@@ -67,7 +67,7 @@ namespace Chaos
             for (int i = 0, imax = len; i < imax; i++)
             {
                 SkinnedMeshRenderer smr = allRenderers[i];
-                if (!smr.enabled || smr.material.mainTexture == null)
+                if (!smr.enabled/* || smr.material.mainTexture == null*/)
                 {
                     continue;
                 }
@@ -114,7 +114,7 @@ namespace Chaos
             for (int i = 0, imax = len; i < imax; i++)
             {
                 SkinnedMeshRenderer smr = allRenderers[i];
-                if (!smr.enabled || smr.material.mainTexture == null)
+                if (!smr.enabled/* || smr.material.mainTexture == null*/)
                 {
                     continue;
                 }
@@ -247,11 +247,20 @@ namespace Chaos
 #if DEBUG
                     if (!allRenderers[i].sharedMaterial.HasProperty(str))
                     {
-                        _textures.Add(null);
+                        _textures.Add(new Texture2D(8, 8));
+                        //Debug.LogWarning(string.Format("Material of {0} does not have property {1}", allRenderers[i], str));
                         continue;
                     }
 #endif
-                    _textures.Add(allRenderers[i].sharedMaterial.GetTexture(str) as Texture2D);
+                    Texture2D tex = allRenderers[i].sharedMaterial.GetTexture(str) as Texture2D;
+#if DEBUG
+                    if (null == tex)
+                    {
+                        tex = new Texture2D(8, 8);
+                    }
+                    //Debug.LogWarning(string.Format("Main texture of {0} is null", allRenderers[i]));
+#endif
+                    _textures.Add(tex);
                 }
                 Texture skinnedMeshAtlas = PackAllTextures(_textures, ref packingResult, ref width, ref height);
                 sharedMaterial.SetTexture(str, skinnedMeshAtlas);
